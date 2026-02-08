@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>URL Shortener</title>
+    <link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}?v=1">
+
+</head>
+<body>
+
+    <div class="container">
+        <h1>🔗 URL Shortener</h1>
+        <p>Paste your long URL below to get a short one</p>
+
+       <form method="POST">
+    {{ form.hidden_tag() }}
+
+    {{ form.url_input(
+        class_="url-input",
+        placeholder="Enter long URL here..."
+    ) }}
+
+    {{ form.submit(
+        class_="url-submit",
+        value="Shorten URL"
+    ) }}
+</form>
+
+
+        <div class="result">
+            <p>Shortened URL:</p>
+            <a href="#">https://short.ly/Ab3X9</a>
+        </div>
+    </div>
+
+</body>
+</html>
