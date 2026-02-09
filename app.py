@@ -1,31 +1,30 @@
-from flask import Flask, render_template, request, flash, redirect, abort
+from flask import Flask, render_template, request, redirect, abort
 from InputForm import InputForm
 import secrets
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "abc"
 
-shortened_urls = []
+shortened_urls = {}
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = InputForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            id = secrets.token_urlsafe(8)
-            shortened_url = request.base_url + id
-            shortened_urls.append({"destination_url": form.url_input.data, "id": id})
-            flash(f"Shortened URL: {shortened_url}", "success message")
-            form.url_input.data=''
-        else:
-            flash("Invalid URL!", "error message")
-    return render_template("index.html", form=form)
+    short_url = None
 
-@app.route("/<id>")
-def shortened(id):
-    for shortened_url in shortened_urls:
-        if shortened_url["id"] == id:
-            return redirect(shortened_url["destination_url"])
+    if form.validate_on_submit():
+        short_id = secrets.token_urlsafe(6)
+        shortened_urls[short_id] = form.url_input.data
+        short_url = request.host_url + short_id
+        form.url_input.data = ""
+
+    return render_template("index.html", form=form, short_url=short_url)
+
+
+@app.route("/<short_id>")
+def redirect_url(short_id):
+    if short_id in shortened_urls:
+        return redirect(shortened_urls[short_id])
     return abort(404)
 
 if __name__ == "__main__":
